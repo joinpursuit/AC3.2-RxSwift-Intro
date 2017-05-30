@@ -1,11 +1,11 @@
 PODS:
-  - RxSwift (3.1.0)
+  - RxSwift (3.4.1)
 
 DEPENDENCIES:
   - RxSwift (~> 3.0)
 
 SPEC CHECKSUMS:
-  RxSwift: 83ff553e7593fdfdcb2562933a64c0284dffdadc
+  RxSwift: 656f8fbeca5bc372121a72d9ebdd3cd3bc0ffade
 
 PODFILE CHECKSUM: e3bbd1e425776eba35985026bf85b8a5a4f36cbb
 

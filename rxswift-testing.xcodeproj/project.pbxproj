@@ -12,6 +12,7 @@
 		141DCC401EDCBEED006A209D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 141DCC3E1EDCBEED006A209D /* Main.storyboard */; };
 		141DCC421EDCBEED006A209D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 141DCC411EDCBEED006A209D /* Assets.xcassets */; };
 		141DCC451EDCBEED006A209D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 141DCC431EDCBEED006A209D /* LaunchScreen.storyboard */; };
+		148B215F1EDDD4F90094C1D8 /* rxswift.playground in Sources */ = {isa = PBXBuildFile; fileRef = 141DCC4D1EDDD36D006A209D /* rxswift.playground */; };
 		4F3C11D5567D326F1494C573 /* Pods_rxswift_testing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF1D2F74FBA4DA5E1B45C38A /* Pods_rxswift_testing.framework */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,7 @@
 		141DCC411EDCBEED006A209D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		141DCC441EDCBEED006A209D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		141DCC461EDCBEED006A209D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		141DCC4D1EDDD36D006A209D /* rxswift.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = rxswift.playground; path = ../rxswift.playground; sourceTree = "<group>"; };
 		496FF66EEF05C7BE06FDCF59 /* Pods-rxswift-testing.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rxswift-testing.debug.xcconfig"; path = "Pods/Target Support Files/Pods-rxswift-testing/Pods-rxswift-testing.debug.xcconfig"; sourceTree = "<group>"; };
 		5185EB77F9F6D975EFADAC5F /* Pods-rxswift-testing.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rxswift-testing.release.xcconfig"; path = "Pods/Target Support Files/Pods-rxswift-testing/Pods-rxswift-testing.release.xcconfig"; sourceTree = "<group>"; };
 		FF1D2F74FBA4DA5E1B45C38A /* Pods_rxswift_testing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_rxswift_testing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -61,6 +63,7 @@
 		141DCC391EDCBEED006A209D /* rxswift-testing */ = {
 			isa = PBXGroup;
 			children = (
+				141DCC4D1EDDD36D006A209D /* rxswift.playground */,
 				141DCC3A1EDCBEED006A209D /* AppDelegate.swift */,
 				141DCC3C1EDCBEED006A209D /* ViewController.swift */,
 				141DCC3E1EDCBEED006A209D /* Main.storyboard */,
@@ -212,6 +215,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				148B215F1EDDD4F90094C1D8 /* rxswift.playground in Sources */,
 				141DCC3D1EDCBEED006A209D /* ViewController.swift in Sources */,
 				141DCC3B1EDCBEED006A209D /* AppDelegate.swift in Sources */,
 			);
@@ -379,6 +383,7 @@
 				141DCC4B1EDCBEED006A209D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
