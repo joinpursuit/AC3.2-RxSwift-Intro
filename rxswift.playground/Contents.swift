@@ -60,10 +60,10 @@ example(of: "from") {
   /*
    subscribe() returns a type of Disposable. This is an object
    that conforms to a particular protocol to indicate it can be disposed.
-  */
+   */
   let observable = Observable.from([1, 2, 3, 4, 5, 6])
   let subscription: Disposable = observable.subscribe {
-      print($0)
+    print($0)
   }
   subscription.disposed(by: disposeBag)
   
@@ -71,12 +71,16 @@ example(of: "from") {
     print("This is the other subscribe", $0)
   }
   
+  observable
+    .subscribe { print("checking on another sub", $0) }
+    .disposed(by: disposeBag)
+  
   // disposing of a subscription causes the underlying sequence to emit a completed event and to terminate. The sequence here was determined ahead of time, and so the completed event gets called automatically. However, in most cases you want the observer to continually emit events.
   
   // To remove a subscription properly, you'd need to call .dispose() on the Disposable object. But convention is to add observables to a DisposeBag and then to call dispose on all items in the DisposeBag in the deinit of a class.
 }
 
-example(of: "error") { 
+example(of: "error") {
   enum MyError: Error {
     case testError
   }
@@ -84,6 +88,155 @@ example(of: "error") {
   Observable<Void>.error(MyError.testError)
     .subscribe(onError: { (error: Error) in
       print(error)
-  })
+    })
   
 }
+
+/*
+ Subject in RxSwift
+ - Subject: acts as both an observable sequence (can be subscribed to) and observer (to add new elements, which will be emitted to the subject’s subscribers.
+ 
+ 1. PublishSubject
+ - you need to specify the type of the PublishSubject on init
+ - subscribers only receives events after they subscribe
+ - but still receives onComplete and onError
+ 
+ 
+ 2. BehaviorSubject
+ - subscriber receives the last event emitted, or the initialized value
+ - but they still send/receive onComplete and onError
+ 
+ 
+ 3. ReplaySubject
+ - receives a buffer of previous events, so it could the last n-number of events on a stream
+ - receives them in the same order they occurred.
+ 
+ 
+ 4. Variable
+ - Wraps a BehaviorSubject
+ - Replays most recent next() event
+ - Will not emit error event
+ - Automatically completes when it is about to be deallocated
+ - Uses dot-syntax to get or set latest value
+ */
+
+
+// Only gets the events going forward
+example(of: "PublishSubject") {
+  
+  let disposeBag: DisposeBag = DisposeBag()
+  
+  // <Int> describes the .value of the Event(s) this observable stream will emit
+  // This is analogous to saying that
+  //
+  // let values = [1, 2, 3].map { $0 * $0 }
+  //
+  // values would be Array<Int> because map returns a type of Array<T> where
+  // T is the Element type of result of the map closure
+  
+  let observable = PublishSubject<Int>()
+  observable
+    .subscribe {
+      print("get all of them", $0)
+    }
+    .disposed(by: disposeBag)
+  
+  observable.onNext(1)
+  observable.onNext(2)
+  observable.onNext(3)
+  
+  // this only receives events that come after subscription
+  observable
+    .subscribe(onNext: {
+      print($0)
+    }, onCompleted: {
+      print("Stream completed")
+    })
+    .disposed(by: disposeBag)
+  
+  
+  observable.onNext(4)
+  observable.onNext(5)
+  
+  // PublishSubjects do not send a complete() event automatically, you have to
+  // specifically call it
+  observable.onCompleted()
+}
+
+// Sends subscribers either the most recent event, or the initial value of the stream
+example(of: "BehaviorSubject") {
+  
+  let disposeBag = DisposeBag()
+  
+  // doesn't need to be given an explicit Element type, it gets inferred from the initial value
+  // BehaviorSubject<String>
+  let observable = BehaviorSubject(value: "Hello")
+  observable.onNext("World")
+  observable.onNext("Nice to meet you")
+  
+  // this only receives the initial value OR the most recent one
+  observable
+    .subscribe {
+      print($0)
+    }
+    .disposed(by: disposeBag)
+}
+
+// It replays a buffer of events, you determine the size of the buffer
+example(of: "ReplaySubject") {
+  
+  let disposeBag = DisposeBag()
+  let observable = ReplaySubject<Int>.create(bufferSize: 4)
+  observable.onNext(1)
+  observable.onNext(2)
+  observable.onNext(3)
+  observable.onNext(4)
+  observable.onNext(5)
+  observable.onNext(6)
+  
+  observable.subscribe {
+    print($0)
+    }.disposed(by: disposeBag)
+  
+  observable
+    .subscribe(onNext: {
+      print($0)
+    })
+    .disposed(by: disposeBag)
+}
+
+// Wrapper on a BehaviorSubject
+example(of: "Variable") {
+  let disposeBag = DisposeBag()
+  
+  // Variable<String>
+  let observable = Variable("cat")
+  
+  // Observable<String>
+  let behaviorSubject = observable.asObservable()
+  observable.value = "dog"
+  observable.value = "mouse"
+  observable.value = "kitten"
+  
+  // only "kitten" gets outputted because it was the last value that was emitted before the subscription occured.
+  // but all subsequent events get outputted as well because they come after the subscription has occurred
+  behaviorSubject.subscribe {
+    print($0)
+  }
+  
+  observable.value = "bird"
+  observable.value = "snake"
+  observable.value = "rabbit"
+
+}
+
+/*
+ It's your party, and you're opening presents. But your mother leaves the room to get cupcakes, 
+ and you open three presents.
+ 
+ - Your friends that are present for you receiving events since the start, just observe the events the entire time you open presents. They're subscribed to your opening present observations
+ - Your mother requesting info on the presents opened is like a *ReplaySubject*: she wants you to replay the present you received. In this case the presents are the events in your opening observation
+ - Your friend that comes in and asks about your previous presents, you give him the last one you opened to shut him up and continue. Your friend is a BehaviorSubject, receiving info on the last present you got, plus everything going forward
+ - Your other not so good friend just comes in for the cake/ambience. So they don't care about what has already occurred, but they pay attention to all further present opening events. They are like a PublishSubject
+ */
+
