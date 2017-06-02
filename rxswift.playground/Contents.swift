@@ -299,5 +299,64 @@ example(of: "takeWhile") {
     .disposed(by: disposeBag)
 }
 
+// scan: like reduce in that it performs an aggregate function on a sequence of values. but it differs because you can access each step of that aggregation as an observable object. Reduce just returns the since obversable with the aggregated value
+// buffer: gathers emitted events based on time or a specified number
+example(of: "scan & buffer") {
+  let disposeBag = DisposeBag()
+  
+  let observable = PublishSubject<Int>()
+  /*
+  observable
+    .buffer(timeSpan: 0.0,
+            count: 2,
+            scheduler: MainScheduler.instance)
+    .subscribe(onNext: {
+      print($0)
+    })
+    .disposed(by: disposeBag)
+ */
+  
+  // it's all about what function you 
+  // use on the returned value of the prior function
+  observable
+    .scan(501, accumulator: -)
+    .buffer(timeSpan: 0.0, count: 3, scheduler: MainScheduler.instance)
+    .map{
+      print($0)
+      return $0.reduce(0, +)
+    }
+    .subscribe(onNext: { print($0) })
+  
+  observable.onNext(5)
+  observable.onNext(9)
+  observable.onNext(22)
+    /*
+    .buffer(timeSpan: 0.0, count: 3, scheduler: MainScheduler.instance)
+    .map{ // [Int]
+      print($0)
+      return $0.reduce(0, +)
+    }
+    .subscribe(onNext: {
+      print("Elements =>", $0)
+    })
+    .disposed(by: disposeBag)
+ 
+  observable.onNext(10)
+  observable.onNext(20)
+  observable.onNext(30)
+  
+  observable.onNext(40)
+  observable.onNext(50)
+  observable.onNext(60)
+  
+  observable.onNext(500)
+  observable.onNext(40)
+  observable.onNext(40)
+ */
+}
+
+
+
+
+
 // flatMap, flatMapLast
-// scan, buffer
