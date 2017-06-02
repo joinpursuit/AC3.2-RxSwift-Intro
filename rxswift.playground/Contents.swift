@@ -154,7 +154,6 @@ example(of: "PublishSubject") {
     })
     .disposed(by: disposeBag)
   
-  
   observable.onNext(4)
   observable.onNext(5)
   
@@ -193,6 +192,7 @@ example(of: "ReplaySubject") {
   observable.onNext(4)
   observable.onNext(5)
   observable.onNext(6)
+  observable.onNext(7)
   
   observable.subscribe {
     print($0)
@@ -215,8 +215,8 @@ example(of: "Variable") {
   // Observable<String>
   let behaviorSubject = observable.asObservable()
   observable.value = "dog"
-  observable.value = "mouse"
-  observable.value = "kitten"
+  //observable.value = "mouse"
+  //observable.value = "kitten"
   
   // only "kitten" gets outputted because it was the last value that was emitted before the subscription occured.
   // but all subsequent events get outputted as well because they come after the subscription has occurred
@@ -227,11 +227,11 @@ example(of: "Variable") {
   observable.value = "bird"
   observable.value = "snake"
   observable.value = "rabbit"
-
+  
 }
 
 /*
- It's your party, and you're opening presents. But your mother leaves the room to get cupcakes, 
+ It's your party, and you're opening presents. But your mother leaves the room to get cupcakes,
  and you open three presents.
  
  - Your friends that are present for you receiving events since the start, just observe the events the entire time you open presents. They're subscribed to your opening present observations
@@ -240,3 +240,64 @@ example(of: "Variable") {
  - Your other not so good friend just comes in for the cake/ambience. So they don't care about what has already occurred, but they pay attention to all further present opening events. They are like a PublishSubject
  */
 
+example(of: "map") {
+  let disposeBag = DisposeBag()
+  Observable.of(1, 2, 3, 10) // returns Observable<Int>
+    .map{ $0 * $0 } // Observable<Int> still
+    .subscribe(onNext:  { // now we subscribe to the result of the map() func call, which is Observable<Int>
+      print($0)
+    })
+    .disposed(by: disposeBag)
+}
+
+example(of: "filter") {
+  let disposeBag = DisposeBag()
+  Observable.generate(initialState: 0,
+                      condition: { $0 < 100 },
+                      iterate:   { $0 + 1} )
+    .filter{ $0 % 2 == 0 }
+    .filter{ $0 % 4 == 0 }
+    .map{ $0 + 1000 }
+    .subscribe(onNext: { print($0) })
+    .disposed(by: disposeBag)
+}
+
+example(of: "distinctUntilChanged") {
+  
+  let disposeBag = DisposeBag()
+  let observable = PublishSubject<String>()
+  
+  
+  // does order matter? yes: try moving around the .map call before/after the distinctUntilChanged function
+  observable
+    //.map{ $0.lowercased() }
+    .distinctUntilChanged()
+    .map{ $0.lowercased() }
+    .subscribe(onNext:  {
+      print($0)
+    })
+    .disposed(by: disposeBag)
+  
+  observable.onNext("Hello")
+  observable.onNext("HELLO")
+  observable.onNext("hello")
+  observable.onNext("There")
+  observable.onNext("There")
+}
+
+// continue to observe events until a specific predicate is met
+example(of: "takeWhile") {
+  
+  let disposeBag = DisposeBag()
+  Observable.generate(initialState: 1,
+                      condition: { $0 < 10 },
+                      iterate: { $0 + 1 })
+    .takeWhile { $0 < 5 }
+    .subscribe(onNext: {
+      print($0)
+    })
+    .disposed(by: disposeBag)
+}
+
+// flatMap, flatMapLast
+// scan, buffer
